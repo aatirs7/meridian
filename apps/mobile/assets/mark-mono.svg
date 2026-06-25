@@ -1,0 +1,10 @@
+<svg width="208" height="232" viewBox="48 66 104 116" xmlns="http://www.w3.org/2000/svg">
+  <!-- Textless monochrome mark (starlight) on a transparent ground. Default
+       mark for in-app use away from the hero/sign-in. -->
+  <g fill="none" stroke-linecap="round" stroke="#E9EFF6">
+    <path d="M55 175 Q100 -5 145 175" stroke-width="2"/>
+    <line x1="94" y1="170" x2="94" y2="88" stroke-width="2"/>
+    <line x1="106" y1="170" x2="106" y2="88" stroke-width="2"/>
+    <circle cx="100" cy="80" r="6" fill="#E9EFF6"/>
+  </g>
+</svg>

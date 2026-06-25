@@ -1,0 +1,11 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" fill="#0B0E12"/>
+  <!-- Monochrome variant: everything in starlight. Use for logo lockups and
+       anywhere it must reproduce cleanly. -->
+  <g transform="translate(-177 -345.6) scale(6.89)" fill="none" stroke-linecap="round" stroke="#E9EFF6">
+    <path d="M55 175 Q100 -5 145 175" stroke-width="1.6"/>
+    <line x1="94" y1="170" x2="94" y2="88" stroke-width="1.6"/>
+    <line x1="106" y1="170" x2="106" y2="88" stroke-width="1.6"/>
+    <circle cx="100" cy="80" r="4.5" fill="#E9EFF6" stroke="none"/>
+  </g>
+</svg>

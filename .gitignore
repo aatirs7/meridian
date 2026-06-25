@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+
+# expo
+apps/mobile/.expo/
+apps/mobile/dist/
+apps/mobile/web-build/
+*.orig.*
+
+# next.js
+apps/api/.next/
+apps/api/out/
+apps/api/.vercel/
+
+# env
+.env
+.env*.local
+!.env.example
+
+# native
+apps/mobile/ios/
+apps/mobile/android/
+
+# misc
+.DS_Store
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.idea/
+.vscode/
+coverage/
+*.tsbuildinfo

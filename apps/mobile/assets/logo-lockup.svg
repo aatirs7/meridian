@@ -1,0 +1,17 @@
+<svg width="640" height="420" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Primary vertical lockup (handoff reference): wordmark on top, two-tone
+       mark centered below. The wide wordmark tracking echoes the gap between
+       the pillars. The app builds this natively; the icon is always textless. -->
+  <rect width="640" height="420" fill="#0B0E12"/>
+  <text x="320" y="92" text-anchor="middle" fill="#E9EFF6"
+        font-family="Space Grotesk, Inter, sans-serif" font-weight="300"
+        font-size="48" letter-spacing="14.4">MERIDIAN</text>
+  <g transform="translate(320 130) scale(1.4)" fill="none" stroke-linecap="round">
+    <g transform="translate(-100 0)">
+      <path d="M55 175 Q100 -5 145 175" stroke="#9DBFDC" stroke-width="2"/>
+      <line x1="94" y1="170" x2="94" y2="88" stroke="#E7DECB" stroke-width="2"/>
+      <line x1="106" y1="170" x2="106" y2="88" stroke="#9DBFDC" stroke-width="2"/>
+      <circle cx="100" cy="80" r="6" fill="#E9EFF6"/>
+    </g>
+  </g>
+</svg>

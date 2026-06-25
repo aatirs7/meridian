@@ -1,0 +1,13 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Full-bleed obsidian square (iOS applies the squircle mask). -->
+  <rect width="1024" height="1024" fill="#0B0E12"/>
+  <!-- Mark from the brand spec's 200px construction, scaled + centered with
+       ~16% padding. Two-tone: warm bone = you, cool steel = him + arc,
+       starlight node at the apex. -->
+  <g transform="translate(-177 -345.6) scale(6.89)" fill="none" stroke-linecap="round">
+    <path d="M55 175 Q100 -5 145 175" stroke="#9DBFDC" stroke-width="1.6"/>
+    <line x1="94" y1="170" x2="94" y2="88" stroke="#E7DECB" stroke-width="1.6"/>
+    <line x1="106" y1="170" x2="106" y2="88" stroke="#9DBFDC" stroke-width="1.6"/>
+    <circle cx="100" cy="80" r="4.5" fill="#E9EFF6"/>
+  </g>
+</svg>
