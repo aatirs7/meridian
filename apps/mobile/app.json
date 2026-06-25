@@ -48,6 +48,10 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "owner": "aatirs7"
+    "owner": "aatirs7",
+    "updates": {
+      "url": "https://u.expo.dev/14a12114-1100-4d2c-9460-e0d78e4431f6"
+    },
+    "android": {}
   }
 }
