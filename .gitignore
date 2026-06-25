@@ -31,3 +31,5 @@ yarn-error.*
 .vscode/
 coverage/
 *.tsbuildinfo
+
+.vercel

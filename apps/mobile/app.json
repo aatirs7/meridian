@@ -42,11 +42,12 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+        "projectId": "14a12114-1100-4d2c-9460-e0d78e4431f6"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    }
+    },
+    "owner": "aatirs7"
   }
 }
