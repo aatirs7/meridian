@@ -3,6 +3,7 @@ import type { BucketItem, BucketStatus, Identity } from "@meridian/shared";
 import { useTheme } from "../lib/context/ThemeContext";
 import { SPACING, RADIUS } from "../constants/theme";
 import { Txt } from "./primitives";
+import { Pill } from "./ui";
 
 export const STATUS_LABEL: Record<BucketStatus, string> = {
   todo: "Not started",
@@ -10,40 +11,50 @@ export const STATUS_LABEL: Record<BucketStatus, string> = {
   done: "Done",
 };
 
+const STATUS_FILL: Record<BucketStatus, number> = {
+  todo: 0,
+  in_progress: 0.5,
+  done: 1,
+};
+
 export function statusFor(item: BucketItem, userId: string): BucketStatus {
   return item.progress.find((p) => p.userId === userId)?.status ?? "todo";
 }
 
-function Tag({ text }: { text: string }) {
-  const { colors } = useTheme();
+/** One person's progress line: name, status word, and a short fill bar. */
+function ProgressLine({
+  name,
+  status,
+  color,
+  track,
+}: {
+  name: string;
+  status: BucketStatus;
+  color: string;
+  track: string;
+}) {
+  const fill = STATUS_FILL[status];
   return (
-    <View style={[styles.tag, { borderColor: colors.border }]}>
-      <Txt tone="faint" variant="caption" weight="medium" style={{ letterSpacing: 0.6 }}>
-        {text.toUpperCase()}
-      </Txt>
+    <View style={styles.progressItem}>
+      <View style={styles.progressMeta}>
+        <View style={[styles.dot, { borderColor: status === "todo" ? track : color, backgroundColor: status === "done" ? color : "transparent" }]} />
+        <Txt variant="caption" style={{ color }}>
+          {name}
+        </Txt>
+        <Txt tone="faint" variant="caption">
+          · {STATUS_LABEL[status]}
+        </Txt>
+      </View>
+      <View style={[styles.miniTrack, { backgroundColor: track }]}>
+        {fill > 0 ? <View style={{ flex: fill, backgroundColor: color }} /> : null}
+        {fill < 1 ? <View style={{ flex: 1 - fill }} /> : null}
+      </View>
     </View>
   );
 }
 
-function StatusDot({ status, color }: { status: BucketStatus; color: string }) {
-  const { colors } = useTheme();
-  const fill =
-    status === "done" ? color : status === "in_progress" ? colors.surfaceRaised : "transparent";
-  return (
-    <View
-      style={[
-        styles.dot,
-        {
-          borderColor: status === "todo" ? colors.border : color,
-          backgroundColor: fill,
-        },
-      ]}
-    />
-  );
-}
-
-/** One row in the shared bucket list. Shows both users' progress as dots, plus
- * a quiet winner/done label. No trophies — just words. */
+/** One card in the shared bucket list. Both users' progress, plus a quiet
+ * winner/done label. No trophies — just words. */
 export function BucketCard({
   item,
   me,
@@ -62,10 +73,10 @@ export function BucketCard({
   const outcome =
     item.mode === "challenge" && item.winnerUserId
       ? item.winnerUserId === me.userId
-        ? `${me.name} won`
-        : `${other.name} won`
+        ? { label: `${me.name} won`, color: colors.you, soft: colors.youSoft }
+        : { label: `${other.name} won`, color: colors.him, soft: colors.himSoft }
       : item.completedAt
-        ? "Completed"
+        ? { label: "Completed", color: colors.accent, soft: colors.himSofter }
         : null;
 
   return (
@@ -73,38 +84,40 @@ export function BucketCard({
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
+        {
+          backgroundColor: pressed ? colors.surfaceRaised : colors.surface,
+          borderColor: colors.border,
+        },
       ]}
     >
       <View style={styles.cardHead}>
-        <Txt variant="body" weight="medium" style={{ flex: 1 }}>
+        <Txt variant="heading" weight="medium" style={{ flex: 1 }}>
           {item.title}
         </Txt>
-        {outcome ? (
-          <Txt tone="accent" variant="caption" weight="semibold">
-            {outcome}
-          </Txt>
-        ) : null}
+        {outcome ? <Pill label={outcome.label} color={outcome.color} soft={outcome.soft} /> : null}
       </View>
 
       <View style={styles.tags}>
-        <Tag text={item.kind} />
-        <Tag text={item.mode} />
+        <Pill
+          label={item.kind}
+          color={colors.textSecondary}
+          soft={colors.surfaceHigh}
+        />
+        <Pill
+          label={item.mode}
+          color={colors.textSecondary}
+          soft={colors.surfaceHigh}
+        />
       </View>
 
       <View style={styles.progressRow}>
-        <View style={styles.progressItem}>
-          <StatusDot status={myStatus} color={colors.you} />
-          <Txt tone="faint" variant="caption">
-            {me.name} · {STATUS_LABEL[myStatus]}
-          </Txt>
-        </View>
-        <View style={styles.progressItem}>
-          <StatusDot status={hisStatus} color={colors.him} />
-          <Txt tone="faint" variant="caption">
-            {other.name} · {STATUS_LABEL[hisStatus]}
-          </Txt>
-        </View>
+        <ProgressLine name={me.name} status={myStatus} color={colors.you} track={colors.youSofter} />
+        <ProgressLine
+          name={other.name}
+          status={hisStatus}
+          color={colors.him}
+          track={colors.himSofter}
+        />
       </View>
     </Pressable>
   );
@@ -115,17 +128,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
-    gap: SPACING.sm,
+    gap: SPACING.md,
   },
-  cardHead: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
+  cardHead: { flexDirection: "row", alignItems: "flex-start", gap: SPACING.sm },
   tags: { flexDirection: "row", gap: SPACING.xs },
-  tag: {
-    borderWidth: 1,
-    borderRadius: RADIUS.sm,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
+  progressRow: { flexDirection: "row", gap: SPACING.lg },
+  progressItem: { flex: 1, gap: 6 },
+  progressMeta: { flexDirection: "row", alignItems: "center", gap: 5 },
+  dot: { width: 9, height: 9, borderRadius: RADIUS.full, borderWidth: 1.5 },
+  miniTrack: {
+    flexDirection: "row",
+    height: 4,
+    borderRadius: 2,
+    overflow: "hidden",
   },
-  progressRow: { gap: SPACING.xs, marginTop: SPACING.xs },
-  progressItem: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
-  dot: { width: 12, height: 12, borderRadius: RADIUS.full, borderWidth: 1.5 },
 });

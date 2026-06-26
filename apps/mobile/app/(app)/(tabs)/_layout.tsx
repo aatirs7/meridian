@@ -4,6 +4,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../../lib/context/ThemeContext";
 import { FONTS } from "../../../constants/theme";
 
+type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
+
+/** Outline when inactive, filled when active — a quiet, legible state change. */
+function tabIcon(base: string) {
+  return ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+    <Ionicons
+      name={(focused ? base : `${base}-outline`) as IoniconName}
+      size={size - 1}
+      color={color}
+    />
+  );
+}
+
 export default function TabsLayout() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -18,44 +31,31 @@ export default function TabsLayout() {
         tabBarLabelStyle: {
           fontSize: 10,
           textTransform: "uppercase",
-          letterSpacing: 1.2,
+          letterSpacing: 1.4,
           fontFamily: FONTS.medium,
+          marginTop: 2,
         },
         tabBarStyle: {
           backgroundColor: colors.tabBarBg,
           borderTopColor: colors.tabBarBorder,
           borderTopWidth: 1,
-          paddingTop: 8,
-          height: 56 + insets.bottom,
+          paddingTop: 10,
+          height: 60 + insets.bottom,
         },
+        tabBarItemStyle: { paddingTop: 2 },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: "Today",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="today-outline" size={size} color={color} />
-          ),
-        }}
+        options={{ title: "Today", tabBarIcon: tabIcon("today") }}
       />
       <Tabs.Screen
         name="tally"
-        options={{
-          title: "Tally",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart-outline" size={size} color={color} />
-          ),
-        }}
+        options={{ title: "Tally", tabBarIcon: tabIcon("stats-chart") }}
       />
       <Tabs.Screen
         name="bucket"
-        options={{
-          title: "Bucket",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list-outline" size={size} color={color} />
-          ),
-        }}
+        options={{ title: "Bucket", tabBarIcon: tabIcon("planet") }}
       />
     </Tabs>
   );

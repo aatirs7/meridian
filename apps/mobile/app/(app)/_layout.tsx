@@ -15,11 +15,11 @@ function Rejected() {
   return (
     <Screen>
       <View style={styles.center}>
-        <Txt variant="title" weight="semibold">
+        <Txt variant="title" weight="medium">
           Not on the list
         </Txt>
         <Txt tone="secondary" style={styles.body}>
-          Meridian is limited to two accounts. This one isn't one of them.
+          Meridian is limited to two accounts. This one isn&apos;t one of them.
         </Txt>
         <Pressable
           onPress={async () => {
@@ -48,10 +48,20 @@ export default function AppLayout() {
     }
   }, [isLoaded, isSignedIn, ready, rejected, refresh]);
 
-  if (!isLoaded) return <Loading />;
+  if (!isLoaded)
+    return (
+      <Screen>
+        <Loading />
+      </Screen>
+    );
   if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   if (rejected) return <Rejected />;
-  if (!ready && isLoading) return <Loading />;
+  if (!ready && isLoading)
+    return (
+      <Screen>
+        <Loading />
+      </Screen>
+    );
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -62,7 +72,7 @@ export default function AppLayout() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center", gap: SPACING.md },
-  body: { textAlign: "center", maxWidth: 280 },
+  body: { textAlign: "center", maxWidth: 280, lineHeight: 22 },
   button: {
     marginTop: SPACING.lg,
     borderWidth: 1,

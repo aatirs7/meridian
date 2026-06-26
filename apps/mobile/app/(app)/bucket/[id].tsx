@@ -3,7 +3,7 @@ import { View, ScrollView, Pressable, StyleSheet, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import type { BucketStatus } from "@meridian/shared";
 import { Screen, Txt, Loading, Notice } from "../../../components/primitives";
-import { Card, Button, TextField, SegmentedToggle, TapText } from "../../../components/ui";
+import { Card, Button, TextField, SegmentedToggle, TapText, Pill } from "../../../components/ui";
 import { STATUS_LABEL, statusFor } from "../../../components/bucket";
 import { useTheme } from "../../../lib/context/ThemeContext";
 import { useAppUser } from "../../../lib/context/UserContext";
@@ -135,16 +135,12 @@ export default function BucketDetail() {
           </Card>
         ) : (
           <View>
-            <Txt variant="title" weight="semibold">
+            <Txt variant="title" weight="medium">
               {item.title}
             </Txt>
-            <View style={{ flexDirection: "row", gap: SPACING.sm, marginTop: SPACING.xs }}>
-              <Txt tone="faint" variant="caption" weight="medium">
-                {item.kind.toUpperCase()}
-              </Txt>
-              <Txt tone="faint" variant="caption" weight="medium">
-                · {item.mode.toUpperCase()}
-              </Txt>
+            <View style={{ flexDirection: "row", gap: SPACING.xs, marginTop: SPACING.sm }}>
+              <Pill label={item.kind} color={colors.textSecondary} soft={colors.surfaceHigh} />
+              <Pill label={item.mode} color={colors.textSecondary} soft={colors.surfaceHigh} />
             </View>
             {item.description ? (
               <Txt tone="secondary" style={{ marginTop: SPACING.sm }}>
@@ -211,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: SPACING.md,
-    marginBottom: SPACING.sm,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.md,
   },
 });

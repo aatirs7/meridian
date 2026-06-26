@@ -1,12 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { View, ScrollView, Pressable, AppState, RefreshControl, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { formatDisplay, type Checkin } from "@meridian/shared";
-import { Screen, Txt, Loading, Notice } from "../../../components/primitives";
-import { ItemRow, SideBySideStanding } from "../../../components/today";
+import {
+  Screen,
+  Txt,
+  Loading,
+  Notice,
+  ScreenHeader,
+  IconButton,
+} from "../../../components/primitives";
+import { Card, Dot } from "../../../components/ui";
+import { ItemRow, MeridianGauge } from "../../../components/today";
 import { useTheme } from "../../../lib/context/ThemeContext";
-import { SPACING } from "../../../constants/theme";
+import { SPACING, RADIUS } from "../../../constants/theme";
 import { useToday, useUpsertCheckin } from "../../../lib/hooks/today";
 import { useNeutralDays, useToggleNeutralToday } from "../../../lib/hooks/neutralDays";
 
@@ -31,11 +38,20 @@ export default function Today() {
     return () => sub.remove();
   }, [refetch]);
 
-  if (isLoading) return <Screen><Loading /></Screen>;
+  if (isLoading) {
+    return (
+      <Screen>
+        <Loading />
+      </Screen>
+    );
+  }
   if (isError || !data) {
     return (
       <Screen>
-        <Header onGear={() => router.push("/non-negotiables/manage")} subtitle="" />
+        <ScreenHeader
+          title="Today"
+          right={<IconButton name="settings-outline" onPress={() => router.push("/non-negotiables/manage")} />}
+        />
         <Notice>Couldn&apos;t load today. Pull to refresh.</Notice>
       </Screen>
     );
@@ -45,12 +61,19 @@ export default function Today() {
 
   return (
     <Screen>
-      <Header
-        onGear={() => router.push("/non-negotiables/manage")}
-        subtitle={formatDisplay(data.date)}
+      <ScreenHeader
+        title="Today"
+        eyebrow={formatDisplay(data.date)}
+        right={
+          <IconButton
+            name="settings-outline"
+            onPress={() => router.push("/non-negotiables/manage")}
+          />
+        }
       />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: SPACING.xxl }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: SPACING.xxl, gap: SPACING.lg }}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -59,7 +82,7 @@ export default function Today() {
           />
         }
       >
-        <SideBySideStanding me={me} other={other} standing={standing} />
+        <MeridianGauge me={me} other={other} standing={standing} />
 
         {neutralEnabled ? (
           <NeutralRow
@@ -70,73 +93,106 @@ export default function Today() {
           />
         ) : null}
 
-        <SectionLabel>Your list</SectionLabel>
-        {me.items.length === 0 ? (
-          <Pressable onPress={() => router.push("/non-negotiables/manage")}>
-            <Txt tone="faint" style={{ paddingVertical: SPACING.md }}>
-              No non-negotiables yet. Tap the gear to add the things you hold yourself to.
-            </Txt>
-          </Pressable>
-        ) : (
-          me.items.map((item) => (
-            <ItemRow
-              key={item.id}
-              item={item}
-              checkin={checkinFor(me.checkins, item.id)}
-              editable
-              accent={colors.you}
-              onSet={(value) => upsert.mutate({ nonNegotiableId: item.id, value })}
-            />
-          ))
-        )}
+        <ListGroup
+          dotColor={colors.you}
+          title="Your non-negotiables"
+          count={me.items.length}
+        >
+          {me.items.length === 0 ? (
+            <EmptyRow onPress={() => router.push("/non-negotiables/manage")}>
+              No non-negotiables yet. Tap to add the things you hold yourself to.
+            </EmptyRow>
+          ) : (
+            me.items.map((item, i) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                checkin={checkinFor(me.checkins, item.id)}
+                editable
+                first={i === 0}
+                accent={colors.you}
+                accentSoft={colors.youSofter}
+                onSet={(value) => upsert.mutate({ nonNegotiableId: item.id, value })}
+              />
+            ))
+          )}
+        </ListGroup>
 
-        <View style={{ height: SPACING.xl }} />
-
-        <SectionLabel>{other.name}&apos;s list</SectionLabel>
-        {other.items.length === 0 ? (
-          <Txt tone="faint" style={{ paddingVertical: SPACING.md }}>
-            Nothing here yet.
-          </Txt>
-        ) : (
-          other.items.map((item) => (
-            <ItemRow
-              key={item.id}
-              item={item}
-              checkin={checkinFor(other.checkins, item.id)}
-              editable={false}
-              accent={colors.him}
-              onSet={() => {}}
-            />
-          ))
-        )}
+        <ListGroup
+          dotColor={colors.him}
+          title={`${other.name}'s non-negotiables`}
+          count={other.items.length}
+        >
+          {other.items.length === 0 ? (
+            <EmptyRow>Nothing here yet.</EmptyRow>
+          ) : (
+            other.items.map((item, i) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                checkin={checkinFor(other.checkins, item.id)}
+                editable={false}
+                first={i === 0}
+                accent={colors.him}
+                accentSoft={colors.himSofter}
+                onSet={() => {}}
+              />
+            ))
+          )}
+        </ListGroup>
       </ScrollView>
     </Screen>
   );
 }
 
-function Header({ onGear, subtitle }: { onGear: () => void; subtitle: string }) {
+/** A titled, bordered group: a colored dot + label + count header over a list of
+ * rows. Rows manage their own padding, so the body has none. */
+function ListGroup({
+  dotColor,
+  title,
+  count,
+  children,
+}: {
+  dotColor: string;
+  title: string;
+  count: number;
+  children: ReactNode;
+}) {
+  const { colors } = useTheme();
   return (
-    <View style={styles.header}>
-      <View>
-        <Txt variant="title" weight="semibold">
-          Today
+    <View
+      style={{
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: RADIUS.md,
+        backgroundColor: colors.surface,
+        overflow: "hidden",
+      }}
+    >
+      <View style={[styles.groupHead, { borderBottomColor: colors.hairline }]}>
+        <Dot color={dotColor} size={7} />
+        <Txt variant="label" weight="medium" style={{ flex: 1 }}>
+          {title}
         </Txt>
-        {subtitle ? (
-          <Txt tone="faint" variant="caption" style={{ marginTop: 2 }}>
-            {subtitle}
+        {count > 0 ? (
+          <Txt tone="faint" variant="caption">
+            {count}
           </Txt>
         ) : null}
       </View>
-      <Pressable onPress={onGear} hitSlop={10}>
-        <GearIcon />
-      </Pressable>
+      {children}
     </View>
   );
 }
 
-function GearIcon() {
-  const { colors } = useTheme();
-  return <Ionicons name="settings-outline" size={22} color={colors.textSecondary} />;
+function EmptyRow({ children, onPress }: { children: ReactNode; onPress?: () => void }) {
+  return (
+    <Pressable onPress={onPress} disabled={!onPress}>
+      <Txt tone="faint" variant="label" style={{ padding: SPACING.md, lineHeight: 20 }}>
+        {children}
+      </Txt>
+    </Pressable>
+  );
 }
 
 function NeutralRow({
@@ -161,10 +217,10 @@ function NeutralRow({
         justifyContent: "space-between",
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 12,
-        paddingVertical: SPACING.sm + 2,
+        borderRadius: RADIUS.md,
+        backgroundColor: colors.surface,
+        paddingVertical: SPACING.md - 2,
         paddingHorizontal: SPACING.md,
-        marginBottom: SPACING.lg,
         opacity: canMark ? 1 : 0.5,
       }}
     >
@@ -172,31 +228,19 @@ function NeutralRow({
         {neutral ? "Today is neutral — no contest" : "Mark today neutral"}
       </Txt>
       <Txt tone="faint" variant="caption">
-        {neutral ? "Undo" : `${remaining} left this month`}
+        {neutral ? "Undo" : `${remaining} left`}
       </Txt>
     </Pressable>
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Txt
-      tone="faint"
-      variant="caption"
-      weight="semibold"
-      style={{ textTransform: "uppercase", letterSpacing: 1.2, marginBottom: SPACING.xs }}
-    >
-      {children}
-    </Txt>
-  );
-}
-
 const styles = StyleSheet.create({
-  header: {
+  groupHead: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: SPACING.md,
-    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+    paddingVertical: SPACING.sm + 4,
+    paddingHorizontal: SPACING.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

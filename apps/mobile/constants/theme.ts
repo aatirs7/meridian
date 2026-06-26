@@ -22,9 +22,15 @@ export const BRAND = {
 
 export interface ThemeColors {
   background: string;
+  /** A hair lighter than background — the ambient field behind panels. */
+  backgroundElevated: string;
   surface: string;
   surfaceRaised: string;
+  /** Most-elevated surface, for the hero panel and pressed insets. */
+  surfaceHigh: string;
   border: string;
+  /** Faintest divider, barely there. */
+  hairline: string;
   text: string;
   textSecondary: string;
   textFaint: string;
@@ -32,9 +38,17 @@ export interface ThemeColors {
   /** The two side-by-side identity colors. Muted on purpose. */
   you: string;
   him: string;
+  /** Translucent identity washes for fills, bars, and selected states. */
+  youSoft: string;
+  himSoft: string;
+  youSofter: string;
+  himSofter: string;
   /** Completion tint. Stays on-palette (no green third color). */
   done: string;
   danger: string;
+  dangerSoft: string;
+  /** Scrim behind modals / the apple button ground. */
+  overlay: string;
   tabBarBg: string;
   tabBarBorder: string;
   tabActive: string;
@@ -43,37 +57,55 @@ export interface ThemeColors {
 
 export const DARK_COLORS: ThemeColors = {
   background: BRAND.obsidian,
+  backgroundElevated: "#0E1218",
   surface: BRAND.panel,
   surfaceRaised: "#171C24",
+  surfaceHigh: "#1B212B",
   border: BRAND.border,
+  hairline: "rgba(233,239,246,0.06)",
   text: BRAND.starlight,
   textSecondary: BRAND.captionGray,
   textFaint: "#5A6675",
   accent: BRAND.accentRing,
   you: BRAND.warmBone,
   him: BRAND.coolSteel,
+  youSoft: "rgba(231,222,203,0.16)",
+  himSoft: "rgba(157,191,220,0.16)",
+  youSofter: "rgba(231,222,203,0.07)",
+  himSofter: "rgba(157,191,220,0.07)",
   done: BRAND.accentRing,
   danger: "#C28A84", // dusty rose — caution without a vivid third color
-  tabBarBg: BRAND.obsidian,
-  tabBarBorder: "#161B22",
+  dangerSoft: "rgba(194,138,132,0.14)",
+  overlay: "rgba(5,7,10,0.62)",
+  tabBarBg: "rgba(11,14,18,0.92)",
+  tabBarBorder: "rgba(233,239,246,0.06)",
   tabActive: BRAND.starlight,
   tabInactive: "#5A6675",
 };
 
 export const LIGHT_COLORS: ThemeColors = {
   background: "#F4F6F9",
+  backgroundElevated: "#EEF1F5",
   surface: "#FFFFFF",
   surfaceRaised: "#ECEFF3",
+  surfaceHigh: "#FFFFFF",
   border: "#D8DEE6",
+  hairline: "rgba(18,22,28,0.08)",
   text: "#12161C",
   textSecondary: "#5A6675",
   textFaint: "#8B98A8",
   accent: "#4E7C9B",
   you: "#8A6E45", // warm bone, darkened for contrast on light
   him: "#3E6E96", // cool steel, darkened for contrast on light
+  youSoft: "rgba(138,110,69,0.14)",
+  himSoft: "rgba(62,110,150,0.14)",
+  youSofter: "rgba(138,110,69,0.06)",
+  himSofter: "rgba(62,110,150,0.06)",
   done: "#4E7C9B",
   danger: "#A35A54",
-  tabBarBg: "#FFFFFF",
+  dangerSoft: "rgba(163,90,84,0.12)",
+  overlay: "rgba(18,22,28,0.38)",
+  tabBarBg: "rgba(255,255,255,0.94)",
   tabBarBorder: "#D8DEE6",
   tabActive: "#12161C",
   tabInactive: "#8B98A8",
@@ -124,13 +156,24 @@ export const RADIUS = {
   full: 9999,
 } as const;
 
-/** Type scale. The big quiet numbers are `hero` / `display`. */
+/** Type scale. The big quiet numbers are `mega` / `hero` / `display`. */
 export const TYPE = {
+  mega: 72,
   hero: 56,
   display: 40,
-  title: 24,
+  title: 28,
   heading: 18,
   body: 16,
   label: 14,
   caption: 12,
+  micro: 11,
+} as const;
+
+/** A soft, low elevation shadow used on the hero panel only. Quiet, not flashy. */
+export const SHADOW = {
+  shadowColor: "#000000",
+  shadowOpacity: 0.35,
+  shadowRadius: 18,
+  shadowOffset: { width: 0, height: 10 },
+  elevation: 8,
 } as const;

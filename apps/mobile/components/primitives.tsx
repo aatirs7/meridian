@@ -2,14 +2,18 @@ import type { ReactNode } from "react";
 import {
   Text,
   View,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   type TextProps,
   type ViewProps,
 } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../lib/context/ThemeContext";
 import { SPACING, TYPE, fontFamilyFor } from "../constants/theme";
+
+type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 /** Full-screen container with safe-area padding and the theme background. */
 export function Screen({
@@ -79,6 +83,86 @@ export function Txt({
   );
 }
 
+/** A small uppercase section label with wide tracking — the brand's quiet eyebrow. */
+export function Eyebrow({
+  children,
+  tone = "faint",
+  style,
+}: {
+  children: ReactNode;
+  tone?: TxtTone;
+  style?: TextProps["style"];
+}) {
+  return (
+    <Txt
+      tone={tone}
+      variant="micro"
+      weight="medium"
+      style={[{ textTransform: "uppercase", letterSpacing: 1.6 }, style]}
+    >
+      {children}
+    </Txt>
+  );
+}
+
+/**
+ * The standard screen header: a large quiet title with an optional eyebrow above
+ * and an optional action on the right (gear, add, Done). Generous top breathing
+ * room so titles never feel jammed under the notch.
+ */
+export function ScreenHeader({
+  title,
+  eyebrow,
+  right,
+}: {
+  title: string;
+  eyebrow?: string;
+  right?: ReactNode;
+}) {
+  return (
+    <View style={styles.header}>
+      <View style={{ flex: 1 }}>
+        {eyebrow ? <Eyebrow style={{ marginBottom: 4 }}>{eyebrow}</Eyebrow> : null}
+        <Txt variant="title" weight="medium" style={{ letterSpacing: 0.2 }}>
+          {title}
+        </Txt>
+      </View>
+      {right ? <View style={styles.headerRight}>{right}</View> : null}
+    </View>
+  );
+}
+
+/** A circular, bordered icon button used in headers (gear, add, back). */
+export function IconButton({
+  name,
+  onPress,
+  tone = "secondary",
+}: {
+  name: IoniconName;
+  onPress: () => void;
+  tone?: "secondary" | "default" | "accent";
+}) {
+  const { colors } = useTheme();
+  const color =
+    tone === "default" ? colors.text : tone === "accent" ? colors.accent : colors.textSecondary;
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      style={({ pressed }) => [
+        styles.iconBtn,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          opacity: pressed ? 0.6 : 1,
+        },
+      ]}
+    >
+      <Ionicons name={name} size={20} color={color} />
+    </Pressable>
+  );
+}
+
 /** Centered loading state. */
 export function Loading() {
   const { colors } = useTheme();
@@ -93,7 +177,7 @@ export function Loading() {
 export function Notice({ children }: { children: ReactNode }) {
   return (
     <View style={styles.center}>
-      <Txt tone="faint" variant="body" style={{ textAlign: "center" }}>
+      <Txt tone="faint" variant="body" style={{ textAlign: "center", lineHeight: 22 }}>
         {children}
       </Txt>
     </View>
@@ -101,6 +185,22 @@ export function Notice({ children }: { children: ReactNode }) {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.lg,
+  },
+  headerRight: { marginLeft: SPACING.md },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   center: {
     flex: 1,
     alignItems: "center",

@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { View, ScrollView, Pressable, RefreshControl, StyleSheet } from "react-native";
+import { View, ScrollView, RefreshControl, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import type { BucketKind } from "@meridian/shared";
-import { Screen, Txt, Loading, Notice } from "../../../components/primitives";
+import {
+  Screen,
+  Txt,
+  Loading,
+  Notice,
+  ScreenHeader,
+  IconButton,
+} from "../../../components/primitives";
 import { SegmentedToggle } from "../../../components/ui";
 import { BucketCard } from "../../../components/bucket";
 import { useTheme } from "../../../lib/context/ThemeContext";
@@ -24,16 +30,13 @@ export default function Bucket() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Txt variant="title" weight="semibold">
-          Bucket
-        </Txt>
-        <Pressable onPress={() => router.push("/bucket/new")} hitSlop={10}>
-          <Ionicons name="add" size={26} color={colors.text} />
-        </Pressable>
-      </View>
+      <ScreenHeader
+        title="Bucket"
+        eyebrow="Shared list"
+        right={<IconButton name="add" tone="default" onPress={() => router.push("/bucket/new")} />}
+      />
 
-      <View style={{ marginBottom: SPACING.md }}>
+      <View style={{ marginBottom: SPACING.lg }}>
         <SegmentedToggle<Filter>
           options={[
             { value: "all", label: "All" },
@@ -51,6 +54,7 @@ export default function Bucket() {
         <Notice>Couldn&apos;t load the bucket. Pull to refresh.</Notice>
       ) : (
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: SPACING.xxl, gap: SPACING.sm }}
           refreshControl={
             <RefreshControl
@@ -61,9 +65,11 @@ export default function Bucket() {
           }
         >
           {items.length === 0 ? (
-            <Txt tone="faint" style={{ marginVertical: SPACING.lg }}>
-              Nothing here yet. Add an experience to chase or a skill to master.
-            </Txt>
+            <View style={styles.empty}>
+              <Txt tone="faint" variant="body" style={{ textAlign: "center", lineHeight: 22 }}>
+                Nothing here yet.{"\n"}Add an experience to chase or a skill to master.
+              </Txt>
+            </View>
           ) : (
             items.map((item) => (
               <BucketCard
@@ -82,11 +88,5 @@ export default function Bucket() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: SPACING.md,
-    marginBottom: SPACING.md,
-  },
+  empty: { paddingVertical: SPACING.xxl, alignItems: "center" },
 });
